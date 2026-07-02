@@ -28,8 +28,9 @@ public class PlayerCloneHandler {
         PacketDistributor.sendToPlayer(
                 player,
                 new SyncRPGDataPacket(
-                        data.getLevel(),
-                        data.getExperience()
+                        data.getExperience(),
+                        data.getAbilityPoints(),
+                        data.getPassiveSkillPoints()
                 )
         );
     }

@@ -4,6 +4,7 @@ import com.RPGsys.RPGsysmod.ExampleMod;
 import com.RPGsys.RPGsysmod.rpg.data.RPGData;
 import com.RPGsys.RPGsysmod.rpg.level.ExperienceHelper;
 import com.RPGsys.RPGsysmod.rpg.level.LevelHelper;
+import com.RPGsys.RPGsysmod.rpg.level.LevelUpHelper;
 import com.RPGsys.RPGsysmod.rpg.network.SyncRPGDataPacket;
 import com.RPGsys.RPGsysmod.rpg.util.EntityUtil;
 import com.RPGsys.RPGsysmod.rpg.util.RPGHelper;
@@ -40,12 +41,25 @@ public class EntityDeathHandler {
         RPGData killerData = RPGHelper.getData(mobKiller);
         killerData.addExperience(gainedExp);
         if (mobKiller instanceof ServerPlayer serverPlayer) {
-            int level = LevelHelper.getLevelFromExperience(killerData.getExperience());
+            LevelUpHelper.handleLevelUp(killerData, gainedExp, killerData.getExperience());
+            System.out.println(
+                    "SERVER SENT XP = "
+                            + killerData.getExperience()
+            );
+            System.out.println(
+                    "SERVER SENT AP = "
+                            + killerData.getAbilityPoints()
+            );
+            System.out.println(
+                    "SERVER SENT SP = "
+                            + killerData.getPassiveSkillPoints()
+            );
             PacketDistributor.sendToPlayer(
                     serverPlayer,
                     new SyncRPGDataPacket(
-                            level,
-                            killerData.getExperience()
+                            killerData.getExperience(),
+                            killerData.getAbilityPoints(),
+                            killerData.getPassiveSkillPoints()
                     )
             );
         }

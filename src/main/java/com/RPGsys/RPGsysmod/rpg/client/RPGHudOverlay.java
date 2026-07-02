@@ -22,19 +22,34 @@ public class RPGHudOverlay {
         GuiGraphics gui = event.getGuiGraphics();
 
         int exp = ClientRPGData.experience;
+        int sp = ClientRPGData.passiveSkillPoints;
+        int ap = ClientRPGData.abilityPoints;
         int level = LevelHelper.getLevelFromExperience(exp);
 
         gui.drawString(
                 mc.font,
                 "Lvl: " + level,
                 5,
-                gui.guiHeight() - 25,
+                gui.guiHeight() - 45,
                 0xFFFFFF
         );
-
         gui.drawString(
                 mc.font,
                 exp + "",
+                5,
+                gui.guiHeight() - 35,
+                0xFFFFFF
+        );
+        gui.drawString(
+                mc.font,
+                ap + ": AP",
+                5,
+                gui.guiHeight() - 25,
+                0xFFFFFF
+        );
+        gui.drawString(
+                mc.font,
+                sp + ": SP",
                 5,
                 gui.guiHeight() - 15,
                 0xFFFFFF

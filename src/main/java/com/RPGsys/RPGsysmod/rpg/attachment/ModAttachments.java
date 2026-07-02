@@ -18,7 +18,7 @@ public class ModAttachments {
             ATTACHMENTS.register(
                     "rpg_data",
                     () -> AttachmentType
-                            .serializable(() -> new RPGData(0, false))
+                            .serializable(() -> new RPGData(0, false, 0, 0))
                             .copyOnDeath()
                             .build()
             );

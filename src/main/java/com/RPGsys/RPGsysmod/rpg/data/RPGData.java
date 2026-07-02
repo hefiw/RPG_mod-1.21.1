@@ -8,10 +8,14 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
 public class RPGData implements INBTSerializable<CompoundTag> {
     private int experience;
     private boolean initialized;
+    private int passiveSkillPoints;
+    private int abilityPoints;
 
-    public RPGData(int experience, boolean initialized) {
+    public RPGData(int experience, boolean initialized,int passiveSkillPoints, int abilityPoints) {
         this.experience = experience;
         this.initialized = initialized;
+        this.passiveSkillPoints = passiveSkillPoints;
+        this.abilityPoints = abilityPoints;
     }
 
     public int getLevel() {
@@ -38,12 +42,42 @@ public class RPGData implements INBTSerializable<CompoundTag> {
         this.initialized = initialized;
     }
 
+    public int getPassiveSkillPoints() {
+        return passiveSkillPoints;
+    }
+
+    public int getAbilityPoints() {
+        return abilityPoints;
+    }
+
+    public void addPassiveSkillPoints(int amount) {
+        passiveSkillPoints += amount;
+    }
+
+    public void addAbilityPoints(int amount) {
+        abilityPoints += amount;
+    }
+
+    public boolean spendPassivePoint(int amount) {
+        if (passiveSkillPoints < amount) {return false;}
+        passiveSkillPoints-=amount;
+        return true;
+    }
+
+    public boolean spendAbilityPoint(int amount) {
+        if (abilityPoints < amount) {return false;}
+        abilityPoints-=amount;
+        return true;
+    }
+
     @Override
     public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
 
         tag.putInt("Experience", experience);
         tag.putBoolean("Initialized", initialized);
+        tag.putInt("PassiveSkillPoints", passiveSkillPoints);
+        tag.putInt("AbilityPoints", abilityPoints);
 
         return tag;
     }
@@ -55,5 +89,7 @@ public class RPGData implements INBTSerializable<CompoundTag> {
     ) {
         experience = tag.getInt("Experience");
         initialized = tag.getBoolean("Initialized");
+        passiveSkillPoints = tag.getInt("PassiveSkillPoints");
+        abilityPoints = tag.getInt("AbilityPoints");
     }
 }

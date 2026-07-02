@@ -10,6 +10,8 @@ public class ClientPacketHandler {
     ) {
         context.enqueueWork(() -> {
             ClientRPGData.experience = packet.experience();
+            ClientRPGData.abilityPoints = packet.ap();
+            ClientRPGData.passiveSkillPoints = packet.sp();
         });
     }
 }
