@@ -14,7 +14,12 @@ public class EntityNameHandler {
 
         mob.setCustomName(
                 Component.literal(
-                        "[Lv." + data.getLevel() + "] " + originalName
+                        "[Lv." + data.getLevel() + "] "
+                                + originalName
+                                + " | hp: "
+                                + (int) mob.getHealth()
+                                + "/"
+                                + (int) mob.getMaxHealth()
                 )
         );
 

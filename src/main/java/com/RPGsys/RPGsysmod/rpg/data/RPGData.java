@@ -1,15 +1,19 @@
 package com.RPGsys.RPGsysmod.rpg.data;
 
 import com.RPGsys.RPGsysmod.rpg.level.LevelHelper;
+import com.RPGsys.RPGsysmod.rpg.passive.MobPassiveType;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+
+import java.util.EnumMap;
 
 public class RPGData implements INBTSerializable<CompoundTag> {
     private int experience;
     private boolean initialized;
     private int passiveSkillPoints;
     private int abilityPoints;
+    private final EnumMap<MobPassiveType, Integer> passiveSkills = new EnumMap<>(MobPassiveType.class);
 
     public RPGData(int experience, boolean initialized,int passiveSkillPoints, int abilityPoints) {
         this.experience = experience;
@@ -70,6 +74,14 @@ public class RPGData implements INBTSerializable<CompoundTag> {
         return true;
     }
 
+    public EnumMap<MobPassiveType, Integer> getPassiveSkills() {
+        return passiveSkills;
+    }
+
+    public void addPassiveSkill(MobPassiveType passive) {
+        passiveSkills.merge(passive, 1, Integer::sum);
+    }
+
     @Override
     public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
@@ -78,6 +90,13 @@ public class RPGData implements INBTSerializable<CompoundTag> {
         tag.putBoolean("Initialized", initialized);
         tag.putInt("PassiveSkillPoints", passiveSkillPoints);
         tag.putInt("AbilityPoints", abilityPoints);
+        CompoundTag passiveTag = new CompoundTag();
+
+        for (var entry : passiveSkills.entrySet()) {
+            passiveTag.putInt(entry.getKey().name(), entry.getValue());
+        }
+
+        tag.put("PassiveSkills", passiveTag);
 
         return tag;
     }
@@ -91,5 +110,11 @@ public class RPGData implements INBTSerializable<CompoundTag> {
         initialized = tag.getBoolean("Initialized");
         passiveSkillPoints = tag.getInt("PassiveSkillPoints");
         abilityPoints = tag.getInt("AbilityPoints");
+
+        passiveSkills.clear();
+        CompoundTag passiveTag = tag.getCompound("PassiveSkills");
+        for (String key : passiveTag.getAllKeys()) {
+            passiveSkills.put(MobPassiveType.valueOf(key), passiveTag.getInt(key));
+        }
     }
 }

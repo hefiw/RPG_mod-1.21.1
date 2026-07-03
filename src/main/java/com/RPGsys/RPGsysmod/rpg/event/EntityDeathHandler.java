@@ -1,11 +1,11 @@
 package com.RPGsys.RPGsysmod.rpg.event;
 
-import com.RPGsys.RPGsysmod.ExampleMod;
 import com.RPGsys.RPGsysmod.rpg.data.RPGData;
 import com.RPGsys.RPGsysmod.rpg.level.ExperienceHelper;
 import com.RPGsys.RPGsysmod.rpg.level.LevelHelper;
 import com.RPGsys.RPGsysmod.rpg.level.LevelUpHelper;
 import com.RPGsys.RPGsysmod.rpg.network.SyncRPGDataPacket;
+import com.RPGsys.RPGsysmod.rpg.passive.PassiveManager;
 import com.RPGsys.RPGsysmod.rpg.util.EntityUtil;
 import com.RPGsys.RPGsysmod.rpg.util.RPGHelper;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,18 +42,6 @@ public class EntityDeathHandler {
         killerData.addExperience(gainedExp);
         if (mobKiller instanceof ServerPlayer serverPlayer) {
             LevelUpHelper.handleLevelUp(killerData, gainedExp, killerData.getExperience());
-            System.out.println(
-                    "SERVER SENT XP = "
-                            + killerData.getExperience()
-            );
-            System.out.println(
-                    "SERVER SENT AP = "
-                            + killerData.getAbilityPoints()
-            );
-            System.out.println(
-                    "SERVER SENT SP = "
-                            + killerData.getPassiveSkillPoints()
-            );
             PacketDistributor.sendToPlayer(
                     serverPlayer,
                     new SyncRPGDataPacket(
@@ -64,6 +52,10 @@ public class EntityDeathHandler {
             );
         }
         if (killer instanceof Mob mob) {
+            if (LevelHelper.getLevelFromExperience(killerData.getExperience())
+                    > LevelHelper.getLevelFromExperience(killerData.getExperience()-gainedExp)) {
+                PassiveManager.generateMissingPassives(mob);
+            }
             EntityNameHandler.updateMobName(mob);
         }
     }

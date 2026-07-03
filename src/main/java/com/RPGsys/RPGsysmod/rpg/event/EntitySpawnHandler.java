@@ -2,7 +2,8 @@ package com.RPGsys.RPGsysmod.rpg.event;
 
 import com.RPGsys.RPGsysmod.rpg.data.RPGData;
 import com.RPGsys.RPGsysmod.rpg.level.MobLevelGenerator;
-import com.RPGsys.RPGsysmod.rpg.util.MobHelper;
+import com.RPGsys.RPGsysmod.rpg.passive.PassiveApplier;
+import com.RPGsys.RPGsysmod.rpg.passive.PassiveManager;
 import com.RPGsys.RPGsysmod.rpg.util.RPGHelper;
 import net.minecraft.world.entity.Mob;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -19,13 +20,10 @@ public class EntitySpawnHandler {
         RPGData data = RPGHelper.getData(mob);
 
         if (!data.isInitialized()) {
+            data.setExperience(MobLevelGenerator.generateExperience(mob));
+            PassiveManager.generateMissingPassives(mob);
+            PassiveApplier.rebuild(mob);
 
-            if (MobHelper.isPassive(mob)) {
-                data.setExperience(0);
-            } else {
-                int exp = MobLevelGenerator.generateExperience(mob);
-                data.setExperience(exp);
-            }
             data.setInitialized(true);
         }
         EntityNameHandler.updateMobName(mob);
