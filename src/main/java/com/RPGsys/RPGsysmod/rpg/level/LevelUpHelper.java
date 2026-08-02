@@ -17,7 +17,7 @@ public class LevelUpHelper {
                 data.addPassiveSkillPoints(1);
             }
 
-            if (lvl % 20 == 0) {
+            if (lvl % 10 == 0) {
                 data.addAbilityPoints(1);
             }
         }

@@ -1,6 +1,6 @@
-package com.RPGsys.RPGsysmod.rpg.passive.effect;
+package com.RPGsys.RPGsysmod.rpg.passive.effects;
 
-import com.RPGsys.RPGsysmod.rpg.passive.MobPassiveType;
+import com.RPGsys.RPGsysmod.rpg.passive.PassiveEffect;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;

@@ -1,7 +1,6 @@
 package com.RPGsys.RPGsysmod.rpg.passive;
 
 import com.RPGsys.RPGsysmod.rpg.data.RPGData;
-import com.RPGsys.RPGsysmod.rpg.passive.effect.PassiveEffect;
 import com.RPGsys.RPGsysmod.rpg.util.RPGHelper;
 import net.minecraft.world.entity.LivingEntity;
 

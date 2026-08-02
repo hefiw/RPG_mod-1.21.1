@@ -1,6 +1,5 @@
-package com.RPGsys.RPGsysmod.rpg.passive.effect;
+package com.RPGsys.RPGsysmod.rpg.passive;
 
-import com.RPGsys.RPGsysmod.rpg.passive.MobPassiveType;
 import net.minecraft.world.entity.LivingEntity;
 
 public interface PassiveEffect {

@@ -1,9 +1,6 @@
 package com.RPGsys.RPGsysmod.rpg.passive;
 
-import com.RPGsys.RPGsysmod.rpg.passive.effect.ArmorBoostPassive;
-import com.RPGsys.RPGsysmod.rpg.passive.effect.DamageBoostPassive;
-import com.RPGsys.RPGsysmod.rpg.passive.effect.HealthBoostPassive;
-import com.RPGsys.RPGsysmod.rpg.passive.effect.PassiveEffect;
+import com.RPGsys.RPGsysmod.rpg.passive.effects.*;
 
 import java.util.EnumMap;
 
@@ -24,6 +21,21 @@ public class PassiveRegistry {
         EFFECTS.put(
                 MobPassiveType.ARMOR_BOOST,
                 new ArmorBoostPassive()
+        );
+
+        EFFECTS.put(
+                MobPassiveType.SPEED_BOOST,
+                new SpeedBoostPassive()
+        );
+
+        EFFECTS.put(
+                MobPassiveType.TOUGHNESS_BOOST,
+                new ToughnessBoostPassive()
+        );
+
+        EFFECTS.put(
+                MobPassiveType.KNOCKBACK_BOOST,
+                new KnockbackBoostPassive()
         );
     }
 
