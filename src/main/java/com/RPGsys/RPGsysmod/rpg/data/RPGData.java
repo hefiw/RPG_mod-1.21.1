@@ -7,6 +7,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RPGData implements INBTSerializable<CompoundTag> {
     private int experience;
@@ -15,11 +17,21 @@ public class RPGData implements INBTSerializable<CompoundTag> {
     private int abilityPoints;
     private final EnumMap<MobPassiveType, Integer> passiveSkills = new EnumMap<>(MobPassiveType.class);
 
+    private final Map<String,Integer> passiveLevels = new HashMap<>();
+
     public RPGData(int experience, boolean initialized,int passiveSkillPoints, int abilityPoints) {
         this.experience = experience;
         this.initialized = initialized;
         this.passiveSkillPoints = passiveSkillPoints;
         this.abilityPoints = abilityPoints;
+    }
+
+    public int getPassiveLevel(String id) {
+        return passiveLevels.getOrDefault(id, 0);
+    }
+
+    public void levelUpPassive(String id) {
+        passiveLevels.merge(id, 1, Integer::sum);
     }
 
     public int getLevel() {
