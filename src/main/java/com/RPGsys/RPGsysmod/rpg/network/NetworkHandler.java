@@ -12,5 +12,11 @@ public class NetworkHandler {
                 SyncRPGDataPacket.STREAM_CODEC,
                 ClientPacketHandler::handle
         );
+
+        registrar.playToServer(
+                UpgradePassivePacket.TYPE,
+                UpgradePassivePacket.STREAM_CODEC,
+                UpgradePassivePacket::handle
+        );
     }
 }

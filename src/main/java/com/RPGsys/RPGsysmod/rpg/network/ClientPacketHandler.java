@@ -12,6 +12,8 @@ public class ClientPacketHandler {
             ClientRPGData.experience = packet.experience();
             ClientRPGData.abilityPoints = packet.ap();
             ClientRPGData.passiveSkillPoints = packet.sp();
+            ClientRPGData.passiveLevels.clear();
+            ClientRPGData.passiveLevels.putAll(packet.passiveLevels());
         });
     }
 }

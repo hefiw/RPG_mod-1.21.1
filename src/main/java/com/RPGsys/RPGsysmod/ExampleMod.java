@@ -5,7 +5,12 @@ import com.RPGsys.RPGsysmod.rpg.event.EntityDeathHandler;
 import com.RPGsys.RPGsysmod.rpg.event.EntitySpawnHandler;
 import com.RPGsys.RPGsysmod.rpg.event.PlayerCloneHandler;
 import com.RPGsys.RPGsysmod.rpg.client.RPGHudOverlay;
+import com.RPGsys.RPGsysmod.rpg.item.SoulMirrorItem;
 import com.RPGsys.RPGsysmod.rpg.network.NetworkHandler;
+import com.RPGsys.RPGsysmod.rpg.passive.PlayerPassiveRegistry;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.*;
 import org.slf4j.Logger;
 
@@ -33,6 +38,7 @@ public class ExampleMod {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
+    public static final DeferredItem<SoulMirrorItem> SOUL_MIRROR = ITEMS.register("soul_mirror", () -> new SoulMirrorItem(new Item.Properties().stacksTo(1)));
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
@@ -40,11 +46,13 @@ public class ExampleMod {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(NetworkHandler::register);
+        modEventBus.addListener(this::addCreative);
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
         ModAttachments.ATTACHMENTS.register(modEventBus);
+        PlayerPassiveRegistry.init();
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(EntitySpawnHandler.class);
@@ -53,6 +61,12 @@ public class ExampleMod {
         NeoForge.EVENT_BUS.register(RPGHudOverlay.class);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    }
+
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+            event.accept(SOUL_MIRROR);
+        }
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

@@ -34,6 +34,10 @@ public class RPGData implements INBTSerializable<CompoundTag> {
         passiveLevels.merge(id, 1, Integer::sum);
     }
 
+    public Map<String, Integer> getPassiveLevels() {
+        return Map.copyOf(passiveLevels);
+    }
+
     public int getLevel() {
         return LevelHelper.getLevelFromExperience(experience);
     }
@@ -110,6 +114,12 @@ public class RPGData implements INBTSerializable<CompoundTag> {
 
         tag.put("PassiveSkills", passiveTag);
 
+        CompoundTag playerPassiveTag = new CompoundTag();
+        for (var entry : passiveLevels.entrySet()) {
+            playerPassiveTag.putInt(entry.getKey(), entry.getValue());
+        }
+        tag.put("PlayerPassiveLevels", playerPassiveTag);
+
         return tag;
     }
 
@@ -127,6 +137,12 @@ public class RPGData implements INBTSerializable<CompoundTag> {
         CompoundTag passiveTag = tag.getCompound("PassiveSkills");
         for (String key : passiveTag.getAllKeys()) {
             passiveSkills.put(MobPassiveType.valueOf(key), passiveTag.getInt(key));
+        }
+
+        passiveLevels.clear();
+        CompoundTag playerPassiveTag = tag.getCompound("PlayerPassiveLevels");
+        for (String key : playerPassiveTag.getAllKeys()) {
+            passiveLevels.put(key, playerPassiveTag.getInt(key));
         }
     }
 }
