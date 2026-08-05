@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -23,73 +24,118 @@ public class SoulMirrorScreen extends Screen {
             ExampleMod.MODID,
             "textures/gui/soul_mirror_background.png"
     );
-    private static final int PANEL_SIZE = 256;
-    private final List<PassiveSkillDefinition> skills = new ArrayList<>();
+    private static final int VIEWPORT_SIZE = 200;
+    private static final int BACKGROUND_TEXTURE_SIZE = 512;
+    private static final int RIGHT_MOUSE_BUTTON = 1;
+    private static final double MIN_BACKGROUND_SCALE = (double) VIEWPORT_SIZE / BACKGROUND_TEXTURE_SIZE;
+    private static final double MAX_BACKGROUND_SCALE = 1.0D;
+    private static final double ZOOM_STEP = 0.1D;
+
+    private double backgroundX;
+    private double backgroundY;
+    private double backgroundScale = MAX_BACKGROUND_SCALE;
+    private boolean draggingBackground;
 
     public SoulMirrorScreen() {
         super(Component.translatable("screen.rpgsys.soul_mirror"));
     }
 
     @Override
-    protected void init() {
-        PlayerPassiveRegistry.init();
-        skills.clear();
-        skills.addAll(PlayerPassiveRegistry.SKILLS.values());
-        //rebuildSkillButtons();
-    }
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
 
-    private void rebuildSkillButtons() {
-        clearWidgets();
-        int startX = (width - PANEL_SIZE) / 2 + 24;
-        int startY = (height - PANEL_SIZE) / 2 + 44;
-        int columns = 2;
+        int left = getViewportLeft();
+        int top = getViewportTop();
+        int scaledBackgroundSize = getScaledBackgroundSize();
 
-        for (int i = 0; i < skills.size(); i++) {
-            PassiveSkillDefinition skill = skills.get(i);
-            int x = startX + (i % columns) * 104;
-            int y = startY + (i / columns) * 52;
-            addRenderableWidget(new TransparentPlusButton(
-                    x + 72,
-                    y + 10,
-                    32,
-                    32,
-                    button -> PacketDistributor.sendToServer(new UpgradePassivePacket(skill.id()))
-            ));
-        }
+        guiGraphics.enableScissor(left, top, left + VIEWPORT_SIZE, top + VIEWPORT_SIZE);
+        guiGraphics.blit(
+                BACKGROUND,
+                left + Mth.floor(backgroundX),
+                top + Mth.floor(backgroundY),
+                scaledBackgroundSize,
+                scaledBackgroundSize,
+                0.0F,
+                0.0F,
+                BACKGROUND_TEXTURE_SIZE,
+                BACKGROUND_TEXTURE_SIZE,
+                BACKGROUND_TEXTURE_SIZE,
+                BACKGROUND_TEXTURE_SIZE
+        );
+        guiGraphics.disableScissor();
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
-        int left = (width - PANEL_SIZE) / 2;
-        int top = (height - PANEL_SIZE) / 2;
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == RIGHT_MOUSE_BUTTON && isMouseOverViewport(mouseX, mouseY)) {
+            draggingBackground = true;
+            return true;
+        }
 
-        guiGraphics.blit(BACKGROUND, left, top, 0, 0, PANEL_SIZE, PANEL_SIZE, PANEL_SIZE, PANEL_SIZE);
-        guiGraphics.drawCenteredString(font, title, width / 2, top + 14, 0xFFE7C27D);
-        guiGraphics.drawString(font, Component.literal("Очки пассивных навыков: " + ClientRPGData.passiveSkillPoints), left + 18, top + 28, 0xFFE7C27D, false);
-        //renderSkills(guiGraphics, left + 24, top + 44, mouseX, mouseY);
-        renderables.forEach(renderable -> renderable.render(guiGraphics, mouseX, mouseY, partialTick));
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    private void renderSkills(GuiGraphics guiGraphics, int startX, int startY, int mouseX, int mouseY) {
-        for (int i = 0; i < skills.size(); i++) {
-            PassiveSkillDefinition skill = skills.get(i);
-            int x = startX + (i % 2) * 104;
-            int y = startY + (i / 2) * 52;
-            int level = ClientRPGData.getPassiveLevel(skill.id());
-
-            guiGraphics.blit(skill.icon(), x, y, 0, 0, 24, 24, 24, 24);
-            guiGraphics.drawString(font, skill.name(), x + 30, y, 0xFFFFFFFF, false);
-            guiGraphics.drawString(font, Component.literal("Ур. " + level), x + 30, y + 11, 0xFFB9A3FF, false);
-
-            if (mouseX >= x && mouseX <= x + 96 && mouseY >= y && mouseY <= y + 34) {
-                guiGraphics.renderTooltip(font, List.of(
-                        FormattedCharSequence.forward(skill.name(), net.minecraft.network.chat.Style.EMPTY),
-                        FormattedCharSequence.forward(skill.description(), net.minecraft.network.chat.Style.EMPTY),
-                        FormattedCharSequence.forward("Стоимость: 1 пассивное очко", net.minecraft.network.chat.Style.EMPTY)
-                ), mouseX, mouseY);
-            }
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (button == RIGHT_MOUSE_BUTTON && draggingBackground) {
+            backgroundX += dragX;
+            backgroundY += dragY;
+            return true;
         }
+
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == RIGHT_MOUSE_BUTTON && draggingBackground) {
+            draggingBackground = false;
+            return true;
+        }
+
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (!isMouseOverViewport(mouseX, mouseY)) {
+            return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        }
+
+        double previousScale = backgroundScale;
+        backgroundScale = Mth.clamp(
+                backgroundScale + scrollY * ZOOM_STEP,
+                MIN_BACKGROUND_SCALE,
+                MAX_BACKGROUND_SCALE
+        );
+
+        if (backgroundScale != previousScale) {
+            double viewportMouseX = mouseX - getViewportLeft();
+            double viewportMouseY = mouseY - getViewportTop();
+            double scaleRatio = backgroundScale / previousScale;
+            backgroundX = viewportMouseX - (viewportMouseX - backgroundX) * scaleRatio;
+            backgroundY = viewportMouseY - (viewportMouseY - backgroundY) * scaleRatio;
+        }
+
+        return true;
+    }
+
+    private boolean isMouseOverViewport(double mouseX, double mouseY) {
+        int left = getViewportLeft();
+        int top = getViewportTop();
+        return mouseX >= left && mouseX < left + VIEWPORT_SIZE && mouseY >= top && mouseY < top + VIEWPORT_SIZE;
+    }
+
+    private int getViewportLeft() {
+        return (width - VIEWPORT_SIZE) / 2;
+    }
+
+    private int getViewportTop() {
+        return (height - VIEWPORT_SIZE) / 2;
+    }
+
+    private int getScaledBackgroundSize() {
+        return Mth.floor(BACKGROUND_TEXTURE_SIZE * backgroundScale);
     }
 
     private class TransparentPlusButton extends AbstractButton {
