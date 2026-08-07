@@ -1,0 +1,9 @@
+{
+  "skills": [
+    "attack_damage",
+    "speed",
+    "health",
+    "regeneration",
+    "max_mana_count"
+  ]
+}

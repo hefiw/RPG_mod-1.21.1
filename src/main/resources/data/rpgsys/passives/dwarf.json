@@ -1,0 +1,9 @@
+{
+  "skills": [
+    "health",
+    "resistance",
+    "attack_damage",
+    "regeneration",
+    "magic_resistance"
+  ]
+}

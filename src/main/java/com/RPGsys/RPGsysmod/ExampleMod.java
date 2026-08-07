@@ -8,6 +8,7 @@ import com.RPGsys.RPGsysmod.rpg.client.RPGHudOverlay;
 import com.RPGsys.RPGsysmod.rpg.item.SoulMirrorItem;
 import com.RPGsys.RPGsysmod.rpg.network.NetworkHandler;
 import com.RPGsys.RPGsysmod.rpg.passive.PlayerPassiveRegistry;
+import com.RPGsys.RPGsysmod.rpg.passive.RacePassiveManager;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -80,5 +81,6 @@ public class ExampleMod {
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
+        RacePassiveManager.reload(event.getServer().getResourceManager());
     }
 }

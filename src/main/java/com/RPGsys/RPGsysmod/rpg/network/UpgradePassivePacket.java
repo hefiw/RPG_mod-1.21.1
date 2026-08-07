@@ -1,7 +1,11 @@
 package com.RPGsys.RPGsysmod.rpg.network;
 
 import com.RPGsys.RPGsysmod.ExampleMod;
+import com.RPGsys.RPGsysmod.rpg.attachment.ModAttachments;
+import com.RPGsys.RPGsysmod.rpg.passive.PlayerPassiveApplier;
 import com.RPGsys.RPGsysmod.rpg.passive.PlayerPassiveRegistry;
+import com.RPGsys.RPGsysmod.rpg.passive.RacePassiveManager;
+import com.RPGsys.RPGsysmod.rpg.race.PlayerRaceHelper;
 import com.RPGsys.RPGsysmod.rpg.util.RPGHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -12,8 +16,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record UpgradePassivePacket(String skillId) implements CustomPacketPayload {
-    public static final Type<UpgradePassivePacket> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(ExampleMod.MODID, "upgrade_passive"));
+    public static final Type<UpgradePassivePacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ExampleMod.MODID, "upgrade_passive"));
 
     public static final StreamCodec<FriendlyByteBuf, UpgradePassivePacket> STREAM_CODEC =
             StreamCodec.of(
@@ -29,6 +32,10 @@ public record UpgradePassivePacket(String skillId) implements CustomPacketPayloa
             if (!PlayerPassiveRegistry.SKILLS.containsKey(packet.skillId)) {
                 return;
             }
+            String race = PlayerRaceHelper.getRace(player);
+            if (!RacePassiveManager.getSkillsForRace(race).contains(packet.skillId)) {
+                return;
+            }
 
             var data = RPGHelper.getData(player);
             if (!data.spendPassivePoint(1)) {
@@ -36,9 +43,10 @@ public record UpgradePassivePacket(String skillId) implements CustomPacketPayloa
             }
 
             data.levelUpPassive(packet.skillId);
+            PlayerPassiveApplier.apply(player, player.getData(ModAttachments.RPG_DATA));
             PacketDistributor.sendToPlayer(
                     player,
-                    SyncRPGDataPacket.from(data)
+                    SyncRPGDataPacket.from(player)
             );
         });
     }

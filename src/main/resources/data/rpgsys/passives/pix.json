@@ -1,0 +1,9 @@
+{
+  "skills": [
+    "speed",
+    "max_mana_count",
+    "mana_regeneration",
+    "magic_resistance",
+    "spell_damage"
+  ]
+}

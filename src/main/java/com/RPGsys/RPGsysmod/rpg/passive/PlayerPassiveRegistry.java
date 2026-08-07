@@ -34,11 +34,14 @@ public class PlayerPassiveRegistry {
             return;
         }
 
-        register("attack_damage", "Сила", "+5% физического урона", "skill_attack_damage");
-        register("health", "Живучесть", "+1 сердце к максимуму здоровья", "skill_health");
-        register("armor", "Броня", "+1 к броне", "skill_armor");
-        register("speed", "Скорость", "+2% скорости передвижения", "skill_speed");
-        register("toughness", "Стойкость", "+1 к твёрдости брони", "skill_toughness");
-        register("knockback", "Натиск", "+5% отбрасывания", "skill_knockback");
+        register("attack_damage", "Сила", "+5% физического урона за уровень", "skill_attack_damage");
+        register("health", "Живучесть", "+1 сердце к максимуму здоровья за уровень", "skill_health");
+        register("speed", "Ловкость", "+2% скорости передвижения за уровень", "skill_speed");
+        register("regeneration", "Регенерация", "+0.05 HP/сек за уровень", "skill_regeneration");
+        register("max_mana_count", "Магический резерв", "+25 максимальной маны за уровень", "skill_max_mana");
+        register("mana_regeneration", "Концентрация", "+5% восстановления маны за уровень", "skill_mana_regeneration");
+        register("spell_damage", "Могущество магии", "+3% силы заклинаний за уровень", "skill_spell_damage");
+        register("resistance", "Стойкость", "-2% входящего физического урона за уровень", "skill_resistance");
+        register("magic_resistance", "Магическая защита", "-2% входящего магического урона за уровень", "skill_magic_resistance");
     }
 }

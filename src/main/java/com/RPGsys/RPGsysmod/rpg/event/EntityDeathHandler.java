@@ -44,7 +44,7 @@ public class EntityDeathHandler {
             LevelUpHelper.handleLevelUp(killerData, gainedExp, killerData.getExperience());
             PacketDistributor.sendToPlayer(
                     serverPlayer,
-                    SyncRPGDataPacket.from(killerData)
+                    SyncRPGDataPacket.from(serverPlayer)
             );
         }
         if (killer instanceof Mob mob) {

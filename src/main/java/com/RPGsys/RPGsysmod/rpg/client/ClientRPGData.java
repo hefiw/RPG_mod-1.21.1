@@ -8,6 +8,7 @@ public class ClientRPGData {
     public static int passiveSkillPoints = 0;
     public static int abilityPoints = 0;
     public static final Map<String, Integer> passiveLevels = new HashMap<>();
+    public static String race = "human";
 
     public static int getPassiveLevel(String id) {
         return passiveLevels.getOrDefault(id, 0);

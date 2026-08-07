@@ -27,7 +27,7 @@ public class PlayerCloneHandler {
 
         PacketDistributor.sendToPlayer(
                 player,
-                SyncRPGDataPacket.from(data)
+                SyncRPGDataPacket.from(player)
         );
     }
 }
